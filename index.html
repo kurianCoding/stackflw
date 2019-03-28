@@ -1,20 +1,56 @@
-<html>
-    <head>
-	<title>
-	    stackoverflow
-	</title>
-	<script src="../d3/d3.v5.min.js"></script>
-    </head>
-    <body>
-	<svg width="720" height="720">
-	    <circle cx="20" cy="30" r="10"></circle>
-	    <circle cx="10" cy="50" r="10"></circle>
-	    <circle cx="30" cy="60" r="10"></circle>
-	</svg>
-    </body>
-</html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
 
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+
+</style>
+<body>
+
+</body>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 <script>
-    var circle=d3.selectAll("circle");
-    circle.style("fill","steelblue");
+
+    function getData(url,method,foo){
+	var xhttp=new XMLHttpRequest(); 
+	xhttp.onreadystatechange=function(){
+	    if (this.readyState==4&&this.status==200){
+		foo(this);
+	    }
+	}
+	xhttp.open(method,url,true);
+	xhttp.send();
+    }
+var h=900;
+var w=900;
+    var svg=d3.select("body").append("svg").attr("height",h).attr("width",w);
+getData(
+"https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=stackoverflow",
+"GET",
+    function(data){
+	var dataset=JSON.parse(data.response).items;
+	console.log(dataset);
+	var elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
+
+	elem.append("circle")
+	    .attr("r",function(d){return (d.count)/100000;})
+	    .attr("fill","teal");
+
+	elem.append("text").text(function(d){return d.name;}).attr("fill","red").attr("font-size","11px");
+}
+);
+    
 </script>
