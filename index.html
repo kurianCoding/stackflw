@@ -42,12 +42,35 @@ getData(
 "GET",
     function(data){
 	var dataset=JSON.parse(data.response).items;
-	console.log(dataset);
 	var elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
+	elem.on("mousedown",function(d){
+	
+	    console.log(d.name);//!error:no method found with this name
+	var uri="https://api.stackexchange.com/2.2/tags/"+d.name+"/related?site=stackoverflow"
+	getData(uri,
+	    "GET",
+	    function(data){
+		 var dataset=JSON.parse(data.response).items;
+		d3.selectAll("svg").remove();
+		var svg=d3.select("body").append("svg").attr("height",h).attr("width",w);
 
-	elem.append("circle")
+		elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
+
+    	var circle=elem.append("circle")
+	    .attr("r",function(d){return (d.count)/10000;})
+	    .attr("fill","teal");
+
+
+	elem.append("text").text(function(d){return d.name;}).attr("fill","red").attr("font-size","11px");
+
+	    })
+
+	})
+
+	circle=elem.append("circle")
 	    .attr("r",function(d){return (d.count)/100000;})
 	    .attr("fill","teal");
+
 
 	elem.append("text").text(function(d){return d.name;}).attr("fill","red").attr("font-size","11px");
 }
