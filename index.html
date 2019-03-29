@@ -19,6 +19,8 @@ text {
 
 </style>
 <body>
+    <input type="text" id="input"></input>
+    <input type="button" class="search"></input>
 
 </body>
 <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -44,9 +46,8 @@ getData(
 	var dataset=JSON.parse(data.response).items;
 	var elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
 	elem.on("mousedown",function(d){
-	
-	    console.log(d.name);//!error:no method found with this name
-	var uri="https://api.stackexchange.com/2.2/tags/"+d.name+"/related?site=stackoverflow"
+	var x=document.getElementById("input");
+	var uri="https://api.stackexchange.com/2.2/search?order=desc&sort=activity&tagged="+d.name+"&intitle="+x.value+"&site=stackoverflow";
 	getData(uri,
 	    "GET",
 	    function(data){
@@ -56,12 +57,8 @@ getData(
 
 		elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
 
-    	var circle=elem.append("circle")
-	    .attr("r",function(d){return (d.count)/10000;})
-	    .attr("fill","teal");
-
-
-	elem.append("text").text(function(d){return d.name;}).attr("fill","red").attr("font-size","11px");
+    
+		elem.append("text").text(function(d){return d.title;}).attr("fill","red").attr("style",function(d){return "font-size:"+(22+d.score/10)+"px"});
 
 	    })
 
