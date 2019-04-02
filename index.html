@@ -23,8 +23,15 @@ text {
     <input type="button" class="search"></input>
 
 </body>
-<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
+
+    /*
+	force layout, stackoverflow.
+    */
+    color=d3.scale.category10();
+
+
 
     function getData(url,method,foo){
 	var xhttp=new XMLHttpRequest(); 
@@ -44,29 +51,34 @@ getData(
 "GET",
     function(data){
 	var dataset=JSON.parse(data.response).items;
+	var force=d3.layout.force().gravity(0.05).nodes(dataset).size([700,700]);
+	    force.start();
+	
 	var elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
+
 	elem.on("mousedown",function(d){
 	var x=document.getElementById("input");
 	var uri="https://api.stackexchange.com/2.2/search?order=desc&sort=activity&tagged="+d.name+"&intitle="+x.value+"&site=stackoverflow";
 	getData(uri,
 	    "GET",
 	    function(data){
-		 var dataset=JSON.parse(data.response).items;
 		d3.selectAll("svg").remove();
+		var dataset=JSON.parse(data.response).items;
 		var svg=d3.select("body").append("svg").attr("height",h).attr("width",w);
 
 		elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
-
     
-		elem.append("text").text(function(d){return d.title;}).attr("fill","red").attr("style",function(d){return "font-size:"+(22+d.score/10)+"px"});
+		elem.append("text").text(function(d){return d.title;}).attr("fill",function(d){return color(d.score%3);}).attr("style",function(d){return "font-size:"+(9+d.score/10)+"px"});
 
 	    })
 
 	})
 
 	circle=elem.append("circle")
-	    .attr("r",function(d){return (d.count)/100000;})
-	    .attr("fill","teal");
+	    .attr("r",function(d){
+		return d.count/10000;
+	    })
+	    .attr("fill",function(d){return color(d.count%3);});
 
 
 	elem.append("text").text(function(d){return d.name;}).attr("fill","red").attr("font-size","11px");
