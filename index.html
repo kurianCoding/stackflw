@@ -20,7 +20,7 @@ text {
 </style>
 <body>
     <input type="text" id="input"></input>
-    <input type="button" class="search"></input>
+    <div id="appgui" height="100%" width="100%"></div>
 
 </body>
 <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -45,13 +45,14 @@ text {
     }
 var h=900;
 var w=900;
-    var svg=d3.select("body").append("svg").attr("height",h).attr("width",w);
+    var svg=d3.select("#appgui").append("svg").attr("height",900).attr("width",1000);
+
 getData(
 "https://api.stackexchange.com/2.2/tags?order=desc&sort=popular&site=stackoverflow",
 "GET",
     function(data){
 	var dataset=JSON.parse(data.response).items;
-	var force=d3.layout.force().gravity(0.05).nodes(dataset).size([700,700]);
+	var force=d3.layout.force().gravity(0.05).nodes(dataset);
 	    force.start();
 	
 	var elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
@@ -64,7 +65,7 @@ getData(
 	    function(data){
 		d3.selectAll("svg").remove();
 		var dataset=JSON.parse(data.response).items;
-		var svg=d3.select("body").append("svg").attr("height",h).attr("width",w);
+		var svg=d3.select("#appgui").append("svg").attr("height",900).attr("width",1000);
 
 		elem=svg.selectAll("g").data(dataset).enter().append("g").attr("transform", function(d){return "translate("+(Math.random()*h)+","+(Math.random()*w/2)+")";});
     
